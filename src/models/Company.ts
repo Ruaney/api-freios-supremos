@@ -1,4 +1,3 @@
 export class Company {
-  private _id: string;
-  constructor(private _name) {}
+  constructor(public name: string, public id?: string) {}
 }

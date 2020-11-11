@@ -4,4 +4,6 @@ const companySchema = new Mongoose.Schema({
   name: {type: String, required: true}
 });
 
-export const CompanyModel = Mongoose.model('Company', companySchema);
+
+export const CompanyMongooseModel = Mongoose.model('Company', companySchema);
+CompanyMongooseModel.name 

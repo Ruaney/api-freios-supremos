@@ -6,4 +6,4 @@ const companyUnitySchema = new Mongoose.Schema({
   company: {type: Mongoose.SchemaTypes.ObjectId, ref: 'Company'}
 });
 
-export const CompanyUnityModel = Mongoose.model('CompanyUnity', companyUnitySchema);
+export const CompanyUnityMongooseModel = Mongoose.model('CompanyUnity', companyUnitySchema);

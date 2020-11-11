@@ -9,4 +9,4 @@ const machineSchema = new Mongoose.Schema({
   status: {type: String, default: 'available'},
 });
 
-export const MachineModel = Mongoose.model('Machine', machineSchema);
+export const MachineMongooseModel = Mongoose.model('Machine', machineSchema);
