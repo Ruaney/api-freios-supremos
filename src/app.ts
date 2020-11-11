@@ -42,6 +42,9 @@ const app = new App(contextDatabase);
 
 // setting routes
 app.addRouter(Routes.companyRouter);
+app.addRouter(Routes.companyUnityRouter);
+app.addRouter(Routes.machineRouter);
+app.addRouter(Routes.userRouter);
 
 // starting server
 app.start();
