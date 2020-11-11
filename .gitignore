@@ -146,6 +146,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+todo
+todo.txt
 © 2020 GitHub, Inc.
 Terms
 Privacy
@@ -158,4 +160,5 @@ API
 Training
 Blog
 About
+
 
