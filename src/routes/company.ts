@@ -6,5 +6,6 @@ export const companyRouter = Express.Router();
 
 const companyController = CompanyControllerInstance;
 
-companyRouter.get(`${resource}`, companyController.get);
-companyRouter.post(`${resource}`, companyController.save);
+companyRouter.get(`${resource}`, companyController.get.bind(companyController));
+companyRouter.get(`${resource}/:id`, companyController.getOne.bind(companyController))
+companyRouter.post(`${resource}`, companyController.save.bind(companyController));

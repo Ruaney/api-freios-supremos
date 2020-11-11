@@ -22,17 +22,27 @@ export class CompanyRepository implements Repository {
     }
   }
 
-  getOne(query): Company {
-    return null;
+  async getOne(query): Promise<Company> {
+    try {
+      const document = await this.model.findOne(query);
+      if (document) {
+        const company = new Company(document.get("name"), document._id);
+        return company;
+      }
+      return;
+    } catch (err) {
+      throw new Error("Error trying to get one element " + err);
+    }
   }
 
-  async save(company: Company) {
+  async save(company: Company): Promise<Company> {
     try {
       const newCompany = new this.model({
-        name: company.name
+        name: company.name,
       });
       await newCompany.save();
-    } catch(err) {
+      return new Company(newCompany.get("name"), newCompany._id);
+    } catch (err) {
       throw new Error("Error trying to save new Company " + err);
     }
   }

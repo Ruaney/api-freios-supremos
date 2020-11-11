@@ -1,24 +1,43 @@
 import { NextFunction, Request, Response } from "express";
-import { Repository } from "../repositories";
+import { Company } from "../models";
 import { CompanyRepository } from "../repositories/companyRepository";
 
-class CompanyController {
-  constructor(private repository: Repository) {}
+export class CompanyController {
+  constructor(private repository: CompanyRepository) {}
 
-  save(req: any, res: Response, next: NextFunction) {
+  async save(req: Request, res: Response, next: NextFunction) {
     try {
-      return res.send('salvando company');
+      const body = req.body;
+      const company = new Company(body.name);
+      const savedCompany = await this.repository.save(company);
+      return res.send(savedCompany);
     } catch (err) {
       return next(err);
     }
   }
 
-  get(req: Request, res: Response, next: NextFunction) {
+  async get(req: Request, res: Response, next: NextFunction) {
     try {
+      const companies = await this.repository.get();
+      return res.send(companies);
     } catch (err) {
       return next(err);
     }
-    return res.send("Listando todas empresass");
+  }
+
+  async getOne(req: Request, res: Response, next: NextFunction) {
+    try {
+      const companyId = req.params.id;
+      const company = await this.repository.getOne({_id: companyId});
+
+      if (!company) {
+        return res.status(404).send();
+      }
+
+      return res.send(company);
+    } catch(err) {
+      return next(err);
+    }
   }
 }
 
