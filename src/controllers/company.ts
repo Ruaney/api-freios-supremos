@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Company } from "../models";
-import { CompanyRepository } from "../repositories/companyRepository";
+import { CompanyRepository } from "../repositories";
 
 export class CompanyController {
   constructor(private repository: CompanyRepository) {}

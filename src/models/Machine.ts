@@ -3,11 +3,11 @@ import { User } from ".";
 export class Machine {
   private _id: string;
   constructor(
-    private _name: string,
-    private _imageUrl: string,
-    private _description: string,
-    private _model: string,
-    private _responsable: User,
-    private _status: 'available' | 'deactivated' | 'maintenance',
+    public name: string,
+    public imageUrl: string,
+    public description: string,
+    public model: string,
+    public responsable: User,
+    public status: 'available' | 'deactivated' | 'maintenance',
   ) {}
 }
