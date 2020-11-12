@@ -47,11 +47,7 @@ export class MachineModelRepository implements Repository {
         description: machineModel.description,
       });
       await newMachineModel.save();
-      return new MachineModel(
-        newMachineModel.get("name"),
-        newMachineModel.get("description"),
-        newMachineModel._id
-      );
+      return this.getOne({_id: newMachineModel._id});
     } catch (err) {
       throw new Error("Error trying to save new new MachineModel " + err);
     }
@@ -65,12 +61,7 @@ export class MachineModelRepository implements Repository {
         { new: true, useFindAndModify: true }
       );
       if (updatedMachineModel) {
-        const machineModel = new MachineModel(
-          updatedMachineModel.get("name"),
-          updatedMachineModel.get('description'),
-          updatedMachineModel._id
-        );
-        return machineModel;
+        return this.getOne({_id: updatedMachineModel._id});
       }
       return;
     } catch (err) {

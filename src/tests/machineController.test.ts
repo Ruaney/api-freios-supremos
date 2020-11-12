@@ -37,7 +37,7 @@ describe("Machine Controller", () => {
     it("Should store a new Machine", async () => {
       const req = {
         file: {
-          path: "imageUrl",
+          path: "image",
         },
         body: {
           name: "Maquina 1",
@@ -104,7 +104,7 @@ describe("Machine Controller", () => {
         _id: "MachineId",
         name: "maquina teste",
         description: "descricao maquina",
-        imageUrl: "urldaImage",
+        image: "urldaImage",
         model: "some model",
         responsable: "some responsable",
         status: "available",
@@ -123,7 +123,7 @@ describe("Machine Controller", () => {
           _id: expectedResponse._id,
           name: expectedResponse.name,
           description: expectedResponse.description,
-          imageUrl: expectedResponse.imageUrl,
+          image: expectedResponse.image,
           model: expectedResponse.model,
           responsable: expectedResponse.responsable,
           status: expectedResponse.status,

@@ -41,7 +41,7 @@ export class UserRepository implements Repository {
         name: user.name,
       });
       await newUser.save();
-      return new User(newUser.get("name"), newUser._id);
+      return this.getOne({_id: newUser._id});
     } catch (err) {
       throw new Error("Error trying to save new User " + err);
     }
@@ -55,11 +55,7 @@ export class UserRepository implements Repository {
         { new: true, useFindAndModify: true }
       );
       if (updatedUser) {
-        const user = new User(
-          updatedUser.get("name"),
-          updatedUser._id
-        );
-        return user;
+        return this.getOne({_id: updatedUser._id});
       }
       return;
     } catch (err) {

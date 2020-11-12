@@ -8,10 +8,10 @@ export class MachineController {
   async save(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body;
-      const imageUrl = (req as any).file?.path;
+      const image = (req as any).file?.originalname;
       const machine = new Machine(
         body.name,
-        imageUrl,
+        image,
         body.description,
         body.model,
         body.responsable,
@@ -34,7 +34,7 @@ export class MachineController {
         return res.status(400).send({ message: "Resource not found" });
       }
 
-      return res.send("updating ativo");
+      return res.send(updatedMachine);
     } catch (err) {
       return next(err);
     }

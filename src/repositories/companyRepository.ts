@@ -41,7 +41,7 @@ export class CompanyRepository implements Repository {
         name: company.name,
       });
       await newCompany.save();
-      return new Company(newCompany.get("name"), newCompany._id);
+      return this.getOne({_id: newCompany._id});
     } catch (err) {
       throw new Error("Error trying to save new Company " + err);
     }
@@ -55,11 +55,7 @@ export class CompanyRepository implements Repository {
         { new: true, useFindAndModify: true }
       );
       if (updatedCompany) {
-        const company = new Company(
-          updatedCompany.get("name"),
-          updatedCompany._id
-        );
-        return company;
+        return this.getOne({_id: updatedCompany._id});
       }
       return;
     } catch (err) {

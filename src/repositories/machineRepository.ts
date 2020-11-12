@@ -12,16 +12,17 @@ export class MachineRepository implements Repository {
 
   async get(): Promise<Machine[]> {
     try {
-      const documents = await this.model.find().populate("user");
+      const documents = await this.model.find().populate("responsable model");
       const machines: Machine[] = documents.map(
         (doc) =>
           new Machine(
             doc.get("name"),
-            doc.get("imageUrl"),
+            doc.get("image"),
             doc.get("description"),
-            doc.get("model"),
-            new User(doc.get("user").name),
-            doc.get("status")
+            new MachineModel(doc.get('model').name, doc.get('description'), doc.get('model')._id),
+            new User(doc.get("responsable").name, doc._id),
+            doc.get("status"),
+            doc._id
           )
       );
       return machines;
@@ -32,15 +33,22 @@ export class MachineRepository implements Repository {
 
   async getOne(query): Promise<Machine> {
     try {
-      const document = await (await this.model.findOne(query)).populate("user");
+      const document = await await this.model
+        .findOne(query)
+        .populate("responsable model");
       if (document) {
         const company = new Machine(
           document.get("name"),
-          document.get("imageUrl"),
+          document.get("image"),
           document.get("description"),
-          document.get("model"),
-          new User(document.get("user").name),
-          document.get("status")
+          new MachineModel(
+            document.get("name"),
+            document.get("description"),
+            document._id
+          ),
+          new User(document.get("responsable").name, document._id),
+          document.get("status"),
+          document._id
         );
         return company;
       }
@@ -54,23 +62,16 @@ export class MachineRepository implements Repository {
     try {
       const newMachine = new this.model({
         name: machine.name,
-        imageUrl: machine.imageUrl,
+        image: machine.image,
         description: machine.description,
         model: machine.model,
         responsable: machine.responsable,
         status: machine.status,
       });
       await newMachine.save();
-      return new Machine(
-        newMachine.get("name"),
-        newMachine.get("imageUrl"),
-        newMachine.get("description"),
-        newMachine.get("model"),
-        new User(newMachine.get("user").name),
-        newMachine.get("status")
-      );
+      return this.getOne({ _id: newMachine._id });
     } catch (err) {
-      throw new Error("Error trying to save new Machine" + err);
+      throw new Error("Error trying to save new Machine " + err);
     }
   }
 
@@ -84,15 +85,7 @@ export class MachineRepository implements Repository {
         )
         .populate("model responsable");
       if (updatedMachine) {
-        const machine = new Machine(
-          updatedMachine.get("name"),
-          updatedMachine.get("imageUrl"),
-          updatedMachine.get("description"),
-          new MachineModel(updatedMachine.get('model').name, updatedMachine.get('model').description, updatedMachine.get('model')._id),
-          new User(updatedMachine.get('responsable').name, updatedMachine.get('responsable')._id),
-          updatedMachine.get('status')
-        );
-        return machine;
+        return this.getOne({_id: updatedMachine._id});
       }
       return;
     } catch (err) {
@@ -103,12 +96,12 @@ export class MachineRepository implements Repository {
 
   async delete(machineId: string): Promise<boolean> {
     try {
-      const deletedMachine = await this.model.deleteOne({_id: machineId});
+      const deletedMachine = await this.model.deleteOne({ _id: machineId });
       if (deletedMachine.deletedCount > 0) {
         return true;
       }
       return false;
-    } catch(err) {
+    } catch (err) {
       throw new Error("Error trying to delete Machine " + err);
     }
   }

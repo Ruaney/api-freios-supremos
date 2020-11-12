@@ -39,7 +39,8 @@ export class CompanyUnityRepository implements Repository {
           document.get("name"),
           document.get("address"),
           new Company(document.get("company").name, document._id),
-          document.get("machines").map((machine) => this.createMachine(machine))
+          document.get("machines").map((machine) => this.createMachine(machine)),
+          document._id
         );
         return companyUnity;
       }
@@ -60,15 +61,7 @@ export class CompanyUnityRepository implements Repository {
 
       await newCompanyUnity.save();
 
-      return new CompanyUnity(
-        newCompanyUnity.get("name"),
-        newCompanyUnity.get("address"),
-        new Company(
-          newCompanyUnity.get("company").name,
-          newCompanyUnity.get("company")._id
-        ),
-        newCompanyUnity._id
-      );
+      return this.getOne({ _id: newCompanyUnity._id });
     } catch (err) {
       throw new Error("Error trying to save new CompanyUnity " + err);
     }
@@ -82,16 +75,7 @@ export class CompanyUnityRepository implements Repository {
         { new: true, useFindAndModify: true }
       );
       if (updatedCompanyUnity) {
-        const companyUnity = new CompanyUnity(
-          updatedCompanyUnity.get("name"),
-          updatedCompanyUnity.get("address"),
-          new Company(
-            updatedCompanyUnity.get("company").name,
-            updatedCompanyUnity.get("company")._id
-          ),
-          updatedCompanyUnity._id
-        );
-        return companyUnity;
+        return this.getOne({_id: updatedCompanyUnity._id});
       }
       return;
     } catch (err) {
@@ -116,7 +100,7 @@ export class CompanyUnityRepository implements Repository {
   private createMachine(doc: any): Machine {
     return new Machine(
       doc.name,
-      doc.imageUrl,
+      doc.image,
       doc.description,
       new MachineModel(doc.model.name, doc.model.description, doc.model._id),
       new User(doc.resposnable.name, doc.responsable._id),
