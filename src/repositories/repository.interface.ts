@@ -3,4 +3,5 @@ export interface Repository {
   getOne(query: any);
   save(data: any);
   update(id: string, data: any);
+  delete(id: string);
 }

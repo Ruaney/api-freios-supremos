@@ -77,4 +77,12 @@ export class MachineRepository implements Repository {
   async update(companyUnityId: string, data: any) {
     return;
   }
+
+  async delete(machineId: string): Promise<Machine> {
+    try {
+      return;
+    } catch (err) {
+      throw new Error("Error trying to delete Machine " + err);
+    }
+  }
 }

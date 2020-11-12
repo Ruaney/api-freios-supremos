@@ -96,4 +96,12 @@ export class CompanyUnityRepository implements Repository {
       throw new Error("Error trying to update CompanyUnity " + err);
     }
   }
+
+  async delete(companyUnityId: string): Promise<CompanyUnity> {
+    try {
+      return;
+    } catch (err) {
+      throw new Error("Error trying to delete CompanyUnity" + err);
+    }
+  }
 }

@@ -48,4 +48,11 @@ export class UserRepository implements Repository {
   async update(companyUnityId: string, data: any) {
     return;
   }
+  async delete(userId: string): Promise<User> {
+    try {
+      return;
+    } catch (err) {
+      throw new Error("Error trying to delete User " + err);
+    }
+  }
 }

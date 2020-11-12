@@ -6,6 +6,7 @@ const mocksRepository = {
   getOne: jest.fn(),
   save: jest.fn(),
   update: jest.fn(),
+  delete: jest.fn()
 };
 class RepositoryMock implements Repository {
   get() {
@@ -19,6 +20,9 @@ class RepositoryMock implements Repository {
   }
   update(query, data) {
     return mocksRepository.update(query, data);
+  }
+  delete(id) {
+    return mocksRepository.delete(id);
   }
 }
 

@@ -66,4 +66,12 @@ export class CompanyRepository implements Repository {
       throw new Error("Error trying to update Company " + err);
     }
   }
+
+  async delete(companyId: string): Promise<Company> {
+    try {
+      return;
+    } catch(err) {
+      throw new Error("Error trying to delete Company " + err);
+    }
+  }
 }

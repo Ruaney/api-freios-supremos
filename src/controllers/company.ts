@@ -32,6 +32,14 @@ export class CompanyController {
     }
   }
 
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      return res.send('deleting company');
+    } catch(err) {
+      return next(err);
+    }
+  }
+
   async get(req: Request, res: Response, next: NextFunction) {
     try {
       const companies = await this.repository.get();
