@@ -1,9 +1,9 @@
-import Mongoose from "mongoose";
+import Mongoose, { Model } from "mongoose";
 import {
   CompanyMongooseModel,
   CompanyUnityMongooseModel,
 } from "../database/mongodb/Schemas";
-import { Company, CompanyUnity } from "../models";
+import { Company, CompanyUnity, Machine, MachineModel, User } from "../models";
 import { Repository } from "./repository.interface";
 
 export class CompanyUnityRepository implements Repository {
@@ -21,7 +21,8 @@ export class CompanyUnityRepository implements Repository {
           new CompanyUnity(
             doc.get("name"),
             doc.get("address"),
-            new Company(doc.get("company").name, doc.get("company")._id)
+            new Company(doc.get("company").name, doc.get("company")._id),
+            doc.get("machines").map((machine) => this.createMachine(machine))
           )
       );
       return companyUnities;
@@ -37,7 +38,8 @@ export class CompanyUnityRepository implements Repository {
         const companyUnity = new CompanyUnity(
           document.get("name"),
           document.get("address"),
-          new Company(document.get("company").name, document._id)
+          new Company(document.get("company").name, document._id),
+          document.get("machines").map((machine) => this.createMachine(machine))
         );
         return companyUnity;
       }
@@ -99,7 +101,9 @@ export class CompanyUnityRepository implements Repository {
 
   async delete(companyUnityId: string): Promise<boolean> {
     try {
-      const deletedCompanyUnity = await this.model.deleteOne({_id: companyUnityId});
+      const deletedCompanyUnity = await this.model.deleteOne({
+        _id: companyUnityId,
+      });
       if (deletedCompanyUnity.deletedCount > 0) {
         return true;
       }
@@ -107,5 +111,16 @@ export class CompanyUnityRepository implements Repository {
     } catch (err) {
       throw new Error("Error trying to delete CompanyUnity" + err);
     }
+  }
+
+  private createMachine(doc: any): Machine {
+    return new Machine(
+      doc.name,
+      doc.imageUrl,
+      doc.description,
+      new MachineModel(doc.model.name, doc.model.description, doc.model._id),
+      new User(doc.resposnable.name, doc.responsable._id),
+      doc.status
+    );
   }
 }

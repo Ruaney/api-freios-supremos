@@ -1,6 +1,6 @@
 import Mongoose from "mongoose";
 import { MachineMongooseModel } from "../database/mongodb/Schemas";
-import { Machine, User } from "../models";
+import { Machine, MachineModel, User } from "../models";
 import { Repository } from "./repository.interface";
 
 export class MachineRepository implements Repository {
@@ -74,14 +74,41 @@ export class MachineRepository implements Repository {
     }
   }
 
-  async update(companyUnityId: string, data: any) {
+  async update(machineId: string, data: any): Promise<Machine> {
+    try {
+      const updatedMachine = await this.model
+        .findOneAndUpdate(
+          { _id: machineId },
+          { $set: data },
+          { new: true, useFindAndModify: true }
+        )
+        .populate("model responsable");
+      if (updatedMachine) {
+        const machine = new Machine(
+          updatedMachine.get("name"),
+          updatedMachine.get("imageUrl"),
+          updatedMachine.get("description"),
+          new MachineModel(updatedMachine.get('model').name, updatedMachine.get('model').description, updatedMachine.get('model')._id),
+          new User(updatedMachine.get('responsable').name, updatedMachine.get('responsable')._id),
+          updatedMachine.get('status')
+        );
+        return machine;
+      }
+      return;
+    } catch (err) {
+      throw new Error("Error trying to update Machine " + err);
+    }
     return;
   }
 
-  async delete(machineId: string): Promise<Machine> {
+  async delete(machineId: string): Promise<boolean> {
     try {
-      return;
-    } catch (err) {
+      const deletedMachine = await this.model.deleteOne({_id: machineId});
+      if (deletedMachine.deletedCount > 0) {
+        return true;
+      }
+      return false;
+    } catch(err) {
       throw new Error("Error trying to delete Machine " + err);
     }
   }
