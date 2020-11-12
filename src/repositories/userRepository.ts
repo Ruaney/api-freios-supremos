@@ -12,24 +12,26 @@ export class UserRepository implements Repository {
 
   async get(): Promise<User[]> {
     try {
-      const documents = await this.model.find().populate("user");
-      const users: User[] = documents.map((doc) => new User(doc.get("name")));
+      const documents = await this.model.find();
+      const users: User[] = documents.map(
+        (doc) => new User(doc._id, doc.get("name"))
+      );
       return users;
     } catch (err) {
-      throw new Error("Error trying to get Users List " + err);
+      throw new Error("Error trying to get User List " + err);
     }
   }
 
   async getOne(query): Promise<User> {
     try {
-      const document = await await this.model.findOne(query);
+      const document = await this.model.findOne(query);
       if (document) {
-        const user = new User(document.get("name"));
+        const user = new User(document.get("name"), document._id);
         return user;
       }
       return;
     } catch (err) {
-      throw new Error("Error trying to get one user" + err);
+      throw new Error("Error trying to get one element " + err);
     }
   }
 
@@ -39,19 +41,40 @@ export class UserRepository implements Repository {
         name: user.name,
       });
       await newUser.save();
-      return new User(newUser.get("name"));
+      return new User(newUser.get("name"), newUser._id);
     } catch (err) {
-      throw new Error("Error trying to save new User" + err);
+      throw new Error("Error trying to save new User " + err);
     }
   }
 
-  async update(companyUnityId: string, data: any) {
-    return;
-  }
-  async delete(userId: string): Promise<User> {
+  async update(UserId: string, data: any): Promise<User> {
     try {
+      const updatedUser = await this.model.findOneAndUpdate(
+        { _id: UserId },
+        { $set: data },
+        { new: true, useFindAndModify: true }
+      );
+      if (updatedUser) {
+        const user = new User(
+          updatedUser.get("name"),
+          updatedUser._id
+        );
+        return user;
+      }
       return;
     } catch (err) {
+      throw new Error("Error trying to update User " + err);
+    }
+  }
+
+  async delete(userId: string): Promise<boolean> {
+    try {
+      const deletedUser = await this.model.deleteOne({_id: userId});
+      if (deletedUser.deletedCount > 0) {
+        return true;
+      }
+      return false;
+    } catch(err) {
       throw new Error("Error trying to delete User " + err);
     }
   }

@@ -1,15 +1,45 @@
-import { NextFunction, Request, Response} from 'express';
-import { User } from '../models';
-import { UserRepository } from '../repositories';
-
+import { NextFunction, Request, Response } from "express";
+import { User } from "../models";
+import { UserRepository } from "../repositories";
 
 export class UserController {
   constructor(private repository: UserRepository) {}
 
   async save(req: Request, res: Response, next: NextFunction) {
     try {
+      const body = req.body;
+      const user = new User(body.name);
+      const savedUser = await this.repository.save(user);
+      return res.send(savedUser);
+    } catch (err) {
+      return next(err);
+    }
+  }
 
-      return res.send('salvando User');
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.params.id;
+      const body = req.body;
+      const updatedUser = await this.repository.update(userId, body);
+
+      if (!updatedUser) {
+        return res.status(400).send({message: "Resource not found"});
+      }
+
+      return res.send(updatedUser);
+    } catch(err) {
+      return next(err);
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.params.id;
+      const userDeleted = await this.repository.delete(userId);
+      if (userDeleted) {
+        return res.send({message: 'Resource deleted'});
+      }
+      return res.send({message: 'Resource not deleted'});
     } catch(err) {
       return next(err);
     }
@@ -19,22 +49,21 @@ export class UserController {
     try {
       const users = await this.repository.get();
       return res.send(users);
-    } catch(err) {
+    } catch (err) {
       return next(err);
     }
   }
 
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
-      return res.send('pegando um user');
-    } catch(err) {
-      return next(err);
-    }
-  }
+      const userId = req.params.id;
+      const user = await this.repository.getOne({_id: userId});
 
-  async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      return res.send('updating user');
+      if (!user) {
+        return res.status(404).send();
+      }
+
+      return res.send(user);
     } catch(err) {
       return next(err);
     }
@@ -42,4 +71,6 @@ export class UserController {
 }
 
 const userRepository = new UserRepository();
-export const UserControllerInstance = new UserController(userRepository);
+export const UserControllerInstance = new UserController(
+  userRepository
+);
