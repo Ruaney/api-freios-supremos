@@ -6,7 +6,7 @@ const mocksRepository = {
   getOne: jest.fn(),
   save: jest.fn(),
   update: jest.fn(),
-  delete: jest.fn()
+  delete: jest.fn(),
 };
 class RepositoryMock implements Repository {
   get() {
@@ -19,10 +19,10 @@ class RepositoryMock implements Repository {
     return mocksRepository.save(data);
   }
   update(id, data) {
-    return mocksRepository.update({_id: id}, data);
+    return mocksRepository.update({ _id: id }, data);
   }
   delete(id) {
-    return mocksRepository.delete({_id: id});
+    return mocksRepository.delete({ _id: id });
   }
 }
 
@@ -123,35 +123,52 @@ describe("CompanyUnity Controller", () => {
   });
 
   describe("#update", () => {
-    
-    it("should call update function with data", async() => {
+    it("should call update function with data", async () => {
       const req = {
         params: {
-          id: 'companyunityid'
+          id: "companyunityid",
         },
         body: {
-          name: 'new companyunity name'
-        }
+          name: "new companyunity name",
+        },
       } as any;
 
       await companyUnityController.update(req, res, next);
-      return expect(mocksRepository.update).toHaveBeenCalledWith({_id: req.params.id}, expect.objectContaining({name: req.body.name}));
+      return expect(mocksRepository.update).toHaveBeenCalledWith(
+        { _id: req.params.id },
+        expect.objectContaining({ name: req.body.name })
+      );
     });
 
     it("should call response with 400 status when given invalid id", async () => {
       const req = {
         params: {
-          id: 'invalidid'
+          id: "invalidid",
         },
-        body: {}
+        body: {},
       } as any;
 
       let res = {
-        status: jest.fn(() => ({send: jest.fn()}))
+        status: jest.fn(() => ({ send: jest.fn() })),
       } as any;
 
       await companyUnityController.update(req, res, next);
       return expect(res.status).toHaveBeenCalledWith(400);
+    });
+  });
+
+  describe("#delete", () => {
+    it("should call delete function of repository to delete", async () => {
+      const req = {
+        params: {
+          id: "companyunityid",
+        },
+      } as any;
+
+      await companyUnityController.delete(req, res, next);
+      return expect(mocksRepository.delete).toHaveBeenCalledWith(
+        expect.objectContaining({ _id: req.params.id })
+      );
     });
   });
 });

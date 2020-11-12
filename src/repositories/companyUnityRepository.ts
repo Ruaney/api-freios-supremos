@@ -97,9 +97,13 @@ export class CompanyUnityRepository implements Repository {
     }
   }
 
-  async delete(companyUnityId: string): Promise<CompanyUnity> {
+  async delete(companyUnityId: string): Promise<boolean> {
     try {
-      return;
+      const deletedCompanyUnity = await this.model.deleteOne({_id: companyUnityId});
+      if (deletedCompanyUnity.deletedCount > 0) {
+        return true;
+      }
+      return false;
     } catch (err) {
       throw new Error("Error trying to delete CompanyUnity" + err);
     }

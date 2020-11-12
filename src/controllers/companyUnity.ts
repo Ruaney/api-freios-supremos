@@ -33,6 +33,19 @@ export class CompanyUnityController {
     }
   }
 
+    async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const companyId = req.params.id;
+      const companyUnityDeleted = await this.repository.delete(companyId);
+      if (companyUnityDeleted) {
+        return res.send({message: 'Resource deleted'});
+      }
+      return res.send({message: 'Resource not deleted'});
+    } catch(err) {
+      return next(err);
+    }
+  }
+
   async get(req: Request, res: Response, next: NextFunction) {
     try {
       const unities = await this.repository.get();

@@ -10,3 +10,4 @@ companyUnityRouter.get(`${resource}`, companyUnityController.get.bind(companyUni
 companyUnityRouter.get(`${resource}/:id`, companyUnityController.getOne.bind(companyUnityController));
 companyUnityRouter.post(`${resource}`, companyUnityController.save.bind(companyUnityController));
 companyUnityRouter.put(`${resource}/:id`, companyUnityController.update.bind(companyUnityController));
+companyUnityRouter.delete(`${resource}/:id`, companyUnityController.delete.bind(companyUnityController));
