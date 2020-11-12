@@ -8,8 +8,10 @@ export class CompanyUnityController {
 
   async save(req: Request, res: Response, next: NextFunction) {
     try {
-
-      return res.send('salvando unidade da compania');
+      const body = req.body;
+      const companyUnity = new CompanyUnity(body.name, body.address, body.company);
+      const savedCompanyUnity = await this.repository.save(companyUnity);
+      return res.send(savedCompanyUnity);
     } catch(err) {
       return next(err);
     }
@@ -25,7 +27,13 @@ export class CompanyUnityController {
   }
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
-      return res.send('pegando uma unidade');
+      const companyUnityId = req.params.id;
+      const companyUnity = await this.repository.getOne({_id: companyUnityId});
+      if (!companyUnity) {
+        return res.status(404).send();
+      }
+
+      return res.send(companyUnity);
     } catch(err) {
       return next(err);
     }

@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 import express, { Router } from "express";
 import { Database } from "./database/database.interface";
 import { MongoDBInstance } from "./database/mongodb/mongodb";
+import { ErrorHandler } from "./errorHandler";
 import * as Routes from "./routes";
 
 // activating dotenv
@@ -16,6 +17,10 @@ class App {
   private configureBodyParser() {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+  }
+
+  setErrorHandler(errorHandler: ErrorHandler) {
+    this.app.use(errorHandler.handle);
   }
 
   async start() {
@@ -45,6 +50,6 @@ app.addRouter(Routes.companyRouter);
 app.addRouter(Routes.companyUnityRouter);
 app.addRouter(Routes.machineRouter);
 app.addRouter(Routes.userRouter);
-
+app.setErrorHandler(new ErrorHandler());
 // starting server
 app.start();

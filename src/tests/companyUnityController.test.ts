@@ -1,5 +1,4 @@
-import { Request } from "express";
-import { CompanyController } from "../controllers";
+import { CompanyUnityController } from "../controllers";
 import { Repository } from "../repositories";
 
 const mocksRepository = {
@@ -23,9 +22,11 @@ class RepositoryMock implements Repository {
   }
 }
 
-describe("Company Controller", () => {
+describe("CompanyUnity Controller", () => {
   const repositoryMock = new RepositoryMock();
-  const companyController = new CompanyController(repositoryMock as any);
+  const companyUnityController = new CompanyUnityController(
+    repositoryMock as any
+  );
 
   const res: any = {
     send: jest.fn(),
@@ -35,52 +36,59 @@ describe("Company Controller", () => {
   const next = jest.fn();
 
   describe("#save", () => {
-    it("Should store a new Company", async () => {
+    it("Should store a new CompanyUnity", async () => {
       const req = {
         body: {
-          name: "Empresa 1 teste",
+          name: "Nova Unidade",
+          address: "Endereco",
+          company: "idCompany",
         },
-      } as Request;
-      await companyController.save(req, res, next);
-
-      expect(mocksRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining({ name: req.body.name })
+      } as any;
+      await companyUnityController.save(req, res, next);
+      return expect(mocksRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: req.body.name,
+          address: req.body.address,
+          company: req.body.company,
+        })
       );
     });
-
     it("Calls next function with an error when required property is not given", async () => {
       const req = {
         body: {},
-      } as Request;
+      } as any;
+
       mocksRepository.save.mockImplementation((data) => {
-        if (!data.name) {
+        if (!data.name || !data.company) {
           throw new Error();
         }
       });
-      await companyController.save(req, res, next);
-      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      await companyUnityController.save(req, res, next);
+      return expect(next).toHaveBeenCalledWith(expect.any(Error));
     });
   });
 
   describe("#get", () => {
-    it("should return all companies", async () => {
-      const req = {} as Request;
-      await companyController.get(req, res, next);
+    it("should return all CompanyUnity", async () => {
+      const req = {} as any;
+      await companyUnityController.get(req, res, next);
 
       return expect(mocksRepository.get).toHaveBeenCalled;
     });
   });
 
   describe("#getOne", () => {
-    it("should return a company by a given id", async () => {
+    it("should return a CompanyUnity by a given id", async () => {
       const req = {
         params: {
-          id: "companyId",
+          id: "companyUnityid",
         },
       } as any;
       const expectedResponse = {
-        _id: "companyId",
-        name: "Empresa teste",
+        _id: "companyUnityid",
+        name: "Nome unidade",
+        address: "Endereco unidade",
+        company: "compania",
       };
 
       mocksRepository.getOne.mockImplementation((query) => {
@@ -90,15 +98,9 @@ describe("Company Controller", () => {
           return null;
         }
       });
-      await companyController.getOne(req, res, next);
-      expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({
-          _id: expectedResponse._id,
-          name: expectedResponse.name,
-        })
-      );
+      await companyUnityController.getOne(req, res, next);
       return expect(mocksRepository.getOne).toHaveBeenCalledWith(
-        expect.objectContaining({ _id: "companyId" })
+        expect.objectContaining({ _id: expectedResponse._id })
       );
     });
 
@@ -111,8 +113,7 @@ describe("Company Controller", () => {
       const res = {
         status: jest.fn(() => ({ send: jest.fn() })),
       } as any;
-
-      await companyController.getOne(req, res, next);
+      await companyUnityController.getOne(req, res, next);
       return expect(res.status).toHaveBeenCalledWith(404);
     });
   });
