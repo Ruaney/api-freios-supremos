@@ -49,6 +49,7 @@ const app = new App(contextDatabase);
 app.addRouter(Routes.companyRouter);
 app.addRouter(Routes.companyUnityRouter);
 app.addRouter(Routes.machineRouter);
+app.addRouter(Routes.machineModelRouter);
 app.addRouter(Routes.userRouter);
 app.setErrorHandler(new ErrorHandler());
 // starting server
