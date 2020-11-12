@@ -20,10 +20,10 @@ class RepositoryMock implements Repository {
     return mocksRepository.save(data);
   }
   update(id, data) {
-    return mocksRepository.update(id, data);
+    return mocksRepository.update({_id: id}, data);
   }
   delete(id) {
-    return mocksRepository.delete(id);
+    return mocksRepository.delete({_id: id});
   }
 }
 
@@ -134,7 +134,7 @@ describe("Company Controller", () => {
       } as any;
 
       await companyController.update(req, res, next);
-      return expect(mocksRepository.update).toHaveBeenCalledWith(req.params.id, expect.objectContaining({name: req.body.name}));
+      return expect(mocksRepository.update).toHaveBeenCalledWith({_id: req.params.id}, expect.objectContaining({name: req.body.name}));
     });
 
     it("should call response with 400 status when given invalid id", async () => {
@@ -153,4 +153,17 @@ describe("Company Controller", () => {
       return expect(res.status).toHaveBeenCalledWith(400);
     });
   });
+
+  describe('#delete', () => {
+    it('should call delete function of repository to delete', async() => {
+      const req = {
+        params: {
+          id: 'companyid'
+        }
+      } as any;
+
+      await companyController.delete(req, res, next);
+      return expect(mocksRepository.delete).toHaveBeenCalledWith(expect.objectContaining({_id: req.params.id}));
+    });
+  })
 });

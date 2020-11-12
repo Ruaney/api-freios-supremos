@@ -34,7 +34,12 @@ export class CompanyController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      return res.send('deleting company');
+      const companyId = req.params.id;
+      const companyDeleted = await this.repository.delete(companyId);
+      if (companyDeleted) {
+        return res.send({message: 'Resource deleted'});
+      }
+      return res.send({message: 'Resource not deleted'});
     } catch(err) {
       return next(err);
     }

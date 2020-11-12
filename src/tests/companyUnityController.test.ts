@@ -18,11 +18,11 @@ class RepositoryMock implements Repository {
   save(data) {
     return mocksRepository.save(data);
   }
-  update(query, data) {
-    return mocksRepository.update(query, data);
+  update(id, data) {
+    return mocksRepository.update({_id: id}, data);
   }
   delete(id) {
-    return mocksRepository.delete(id);
+    return mocksRepository.delete({_id: id});
   }
 }
 
@@ -135,7 +135,7 @@ describe("CompanyUnity Controller", () => {
       } as any;
 
       await companyUnityController.update(req, res, next);
-      return expect(mocksRepository.update).toHaveBeenCalledWith(req.params.id, expect.objectContaining({name: req.body.name}));
+      return expect(mocksRepository.update).toHaveBeenCalledWith({_id: req.params.id}, expect.objectContaining({name: req.body.name}));
     });
 
     it("should call response with 400 status when given invalid id", async () => {

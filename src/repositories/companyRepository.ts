@@ -67,9 +67,13 @@ export class CompanyRepository implements Repository {
     }
   }
 
-  async delete(companyId: string): Promise<Company> {
+  async delete(companyId: string): Promise<boolean> {
     try {
-      return;
+      const deletedCompany = await this.model.deleteOne({_id: companyId});
+      if (deletedCompany.deletedCount > 0) {
+        return true;
+      }
+      return false;
     } catch(err) {
       throw new Error("Error trying to delete Company " + err);
     }
