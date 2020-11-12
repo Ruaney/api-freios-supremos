@@ -9,3 +9,4 @@ const companyUnityController = CompanyUnityControllerInstance;
 companyUnityRouter.get(`${resource}`, companyUnityController.get.bind(companyUnityController));
 companyUnityRouter.get(`${resource}/:id`, companyUnityController.getOne.bind(companyUnityController));
 companyUnityRouter.post(`${resource}`, companyUnityController.save.bind(companyUnityController));
+companyUnityRouter.put(`${resource}/:id`, companyUnityController.update.bind(companyUnityController));

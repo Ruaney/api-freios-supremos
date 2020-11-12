@@ -73,6 +73,27 @@ export class CompanyUnityRepository implements Repository {
   }
 
   async update(companyUnityId: string, data: any) {
-    return;
+    try {
+      const updatedCompanyUnity = await this.model.findOneAndUpdate(
+        { _id: companyUnityId },
+        { $set: data },
+        { new: true, useFindAndModify: true }
+      );
+      if (updatedCompanyUnity) {
+        const companyUnity = new CompanyUnity(
+          updatedCompanyUnity.get("name"),
+          updatedCompanyUnity.get("address"),
+          new Company(
+            updatedCompanyUnity.get("company").name,
+            updatedCompanyUnity.get("company")._id
+          ),
+          updatedCompanyUnity._id
+        );
+        return companyUnity;
+      }
+      return;
+    } catch (err) {
+      throw new Error("Error trying to update CompanyUnity " + err);
+    }
   }
 }
