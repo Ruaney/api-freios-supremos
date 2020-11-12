@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { Machine } from "../models";
 import { MachineRepository } from "../repositories";
+import Path from 'path';
+import * as fs from 'fs';
 
 export class MachineController {
   constructor(private repository: MachineRepository) {}
@@ -8,7 +10,7 @@ export class MachineController {
   async save(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body;
-      const image = (req as any).file?.originalname;
+      const image = (req as any).file?.filename;
       const machine = new Machine(
         body.name,
         image,
@@ -70,6 +72,22 @@ export class MachineController {
       }
       return res.send(machine);
     } catch (err) {
+      return next(err);
+    }
+  }
+
+  async getImage(req: Request, res: Response, next: NextFunction) {
+    try {
+      const machineId = req.params.id;
+      const machine = await this.repository.getOne({_id: machineId});
+
+      if (!machine) {
+        return res.status(404).send();
+      }
+      res.writeHead(200, {'Content-Type': 'image/jpg'});
+      const imagePath = Path.resolve(__dirname, `../../uploads/${machine.image}`);
+      fs.createReadStream(imagePath).pipe(res);
+    } catch(err) {
       return next(err);
     }
   }

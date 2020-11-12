@@ -12,3 +12,6 @@ machineRouter.get(`${resource}/:id`, machineController.getOne.bind(machineContro
 machineRouter.post(`${resource}`, upload.single('image'), machineController.save.bind(machineController));
 machineRouter.put(`${resource}/:id`, machineController.update.bind(machineController));
 machineRouter.delete(`${resource}/:id`, machineController.delete.bind(machineController));
+
+// route to get image
+machineRouter.get(`${resource}/:id/image`, machineController.getImage.bind(machineController));
