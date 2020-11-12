@@ -15,7 +15,7 @@ export class CompanyUnityRepository implements Repository {
 
   async get(): Promise<CompanyUnity[]> {
     try {
-      const documents = await this.model.find({}).populate("company");
+      const documents = await this.model.find({}).populate({path: 'company machines', populate: 'model responsable'});
       const companyUnities: CompanyUnity[] = documents.map(
         (doc) =>
           new CompanyUnity(
@@ -33,13 +33,15 @@ export class CompanyUnityRepository implements Repository {
 
   async getOne(query): Promise<CompanyUnity> {
     try {
-      const document = await this.model.findOne(query).populate("company");
+      const document = await this.model.findOne(query).populate({path: 'company machines', populate: 'model responsable'});
       if (document) {
         const companyUnity = new CompanyUnity(
           document.get("name"),
           document.get("address"),
           new Company(document.get("company").name, document._id),
-          document.get("machines").map((machine) => this.createMachine(machine)),
+          document
+            .get("machines")
+            .map((machine) => this.createMachine(machine)),
           document._id
         );
         return companyUnity;
@@ -75,7 +77,7 @@ export class CompanyUnityRepository implements Repository {
         { new: true, useFindAndModify: true }
       );
       if (updatedCompanyUnity) {
-        return this.getOne({_id: updatedCompanyUnity._id});
+        return this.getOne({ _id: updatedCompanyUnity._id });
       }
       return;
     } catch (err) {
@@ -97,14 +99,49 @@ export class CompanyUnityRepository implements Repository {
     }
   }
 
+  async addMachine(companyUnityId: string, machineId: string) {
+    try {
+      const updatedCompanyUnity = await this.model.findOneAndUpdate(
+        { _id: companyUnityId },
+        { $addToSet: { machines: machineId } },
+        { new: true, useFindAndModify: true }
+      );
+      if (updatedCompanyUnity) {
+        return this.getOne({_id: updatedCompanyUnity._id});
+      }
+      return;
+    } catch (err) {
+      throw new Error(
+        "Error when trying to add Machine to CompanyUnity " + err
+      );
+    }
+  }
+  async removeMachine(companyUnityId: string, machineId: string) {
+    try {
+      const updatedCompanyUnity = await this.model.findOneAndUpdate(
+        { _id: companyUnityId },
+        { $pull: { machines: machineId } },
+        { new: true, useFindAndModify: true }
+      );
+      if (updatedCompanyUnity) {
+        return this.getOne({_id: updatedCompanyUnity._id});
+      }
+      return;
+    } catch (err) {
+      throw new Error(
+        "Error when trying to add Machine to CompanyUnity " + err
+      );
+    }
+  }
   private createMachine(doc: any): Machine {
     return new Machine(
       doc.name,
       doc.image,
       doc.description,
       new MachineModel(doc.model.name, doc.model.description, doc.model._id),
-      new User(doc.resposnable.name, doc.responsable._id),
-      doc.status
+      new User(doc.responsable.name, doc.responsable._id),
+      doc.status,
+      doc._id
     );
   }
 }

@@ -84,9 +84,13 @@ export class MachineController {
       if (!machine) {
         return res.status(404).send();
       }
-      res.writeHead(200, {'Content-Type': 'image/jpg'});
       const imagePath = Path.resolve(__dirname, `../../uploads/${machine.image}`);
-      fs.createReadStream(imagePath).pipe(res);
+      if (fs.existsSync(imagePath)) {
+        res.writeHead(200, {'Content-Type': 'image/jpg'});
+        fs.createReadStream(imagePath).pipe(res);
+      } else {
+        return res.status(404).send({message: 'Image does not exist anymore'});
+      }
     } catch(err) {
       return next(err);
     }
