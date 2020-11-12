@@ -32,9 +32,7 @@ export class MachineRepository implements Repository {
 
   async getOne(query): Promise<Machine> {
     try {
-      const document = await (await this.model.findOne(query)).populate(
-        "user"
-      );
+      const document = await (await this.model.findOne(query)).populate("user");
       if (document) {
         const company = new Machine(
           document.get("name"),
@@ -76,5 +74,7 @@ export class MachineRepository implements Repository {
     }
   }
 
-  update(company: Machine) {}
+  async update(companyUnityId: string, data: any) {
+    return;
+  }
 }

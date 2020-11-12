@@ -18,8 +18,8 @@ class RepositoryMock implements Repository {
   save(data) {
     return mocksRepository.save(data);
   }
-  update(data) {
-    return mocksRepository.update();
+  update(id, data) {
+    return mocksRepository.update(id, data);
   }
 }
 
@@ -27,7 +27,7 @@ describe("Company Controller", () => {
   const repositoryMock = new RepositoryMock();
   const companyController = new CompanyController(repositoryMock as any);
 
-  const res: any = {
+  let res: any = {
     send: jest.fn(),
     status: jest.fn(),
   };
@@ -114,6 +114,39 @@ describe("Company Controller", () => {
 
       await companyController.getOne(req, res, next);
       return expect(res.status).toHaveBeenCalledWith(404);
+    });
+  });
+  
+  describe("#update", () => {
+    
+    it("should call update function with data", async() => {
+      const req = {
+        params: {
+          id: 'companyid'
+        },
+        body: {
+          name: 'new company name'
+        }
+      } as any;
+
+      await companyController.update(req, res, next);
+      return expect(mocksRepository.update).toHaveBeenCalledWith(req.params.id, expect.objectContaining({name: req.body.name}));
+    });
+
+    it("should call response with 400 status when given invalid id", async () => {
+      const req = {
+        params: {
+          id: 'invalidid'
+        },
+        body: {}
+      } as any;
+
+      res = {
+        status: jest.fn(() => ({send: jest.fn()}))
+      } as any;
+
+      await companyController.update(req, res, next);
+      return expect(res.status).toHaveBeenCalledWith(400);
     });
   });
 });

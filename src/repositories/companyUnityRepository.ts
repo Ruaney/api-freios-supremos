@@ -72,7 +72,7 @@ export class CompanyUnityRepository implements Repository {
     }
   }
 
-  async update(data: CompanyUnity) {
+  async update(companyUnityId: string, data: any) {
     return;
   }
 }

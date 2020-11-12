@@ -47,5 +47,23 @@ export class CompanyRepository implements Repository {
     }
   }
 
-  update(company: Company) {}
+  async update(companyId: string, data: any): Promise<Company> {
+    try {
+      const updatedCompany = await this.model.findOneAndUpdate(
+        { _id: companyId },
+        { $set: data },
+        { new: true, useFindAndModify: true }
+      );
+      if (updatedCompany) {
+        const company = new Company(
+          updatedCompany.get("name"),
+          updatedCompany._id
+        );
+        return company;
+      }
+      return;
+    } catch (err) {
+      throw new Error("Error trying to update Company " + err);
+    }
+  }
 }

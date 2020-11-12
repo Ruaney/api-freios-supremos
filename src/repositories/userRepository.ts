@@ -13,12 +13,7 @@ export class UserRepository implements Repository {
   async get(): Promise<User[]> {
     try {
       const documents = await this.model.find().populate("user");
-      const users: User[] = documents.map(
-        (doc) =>
-          new User(
-            doc.get("name"),
-          )
-      );
+      const users: User[] = documents.map((doc) => new User(doc.get("name")));
       return users;
     } catch (err) {
       throw new Error("Error trying to get Users List " + err);
@@ -27,11 +22,9 @@ export class UserRepository implements Repository {
 
   async getOne(query): Promise<User> {
     try {
-      const document = await (await this.model.findOne(query));
+      const document = await await this.model.findOne(query);
       if (document) {
-        const user = new User(
-          document.get("name")
-        );
+        const user = new User(document.get("name"));
         return user;
       }
       return;
@@ -46,13 +39,13 @@ export class UserRepository implements Repository {
         name: user.name,
       });
       await newUser.save();
-      return new User(
-        newUser.get("name"),
-      );
+      return new User(newUser.get("name"));
     } catch (err) {
       throw new Error("Error trying to save new User" + err);
     }
   }
 
-  update(company: User) {}
+  async update(companyUnityId: string, data: any) {
+    return;
+  }
 }

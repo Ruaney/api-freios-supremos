@@ -6,4 +6,3 @@ const companySchema = new Mongoose.Schema({
 
 
 export const CompanyMongooseModel = Mongoose.model('Company', companySchema);
-CompanyMongooseModel.name 

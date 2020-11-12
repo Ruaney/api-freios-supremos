@@ -16,6 +16,22 @@ export class CompanyController {
     }
   }
 
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const companyId = req.params.id;
+      const body = req.body;
+      const updatedCompany = await this.repository.update(companyId, body);
+
+      if (!updatedCompany) {
+        return res.status(400).send({message: "Resource not found"});
+      }
+
+      return res.send(updatedCompany);
+    } catch(err) {
+      return next(err);
+    }
+  }
+
   async get(req: Request, res: Response, next: NextFunction) {
     try {
       const companies = await this.repository.get();
