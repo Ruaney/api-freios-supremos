@@ -16,7 +16,7 @@ Voce pode testar a api clicando [aqui]().
 * [Nodejs](https://nodejs.org/en/) -> Runtime JavaScript
 * [Typescript](https://www.typescriptlang.org/) -> Superset JavaScript
 * [Express](https://expressjs.com/pt-br/) -> Web Framework
-* [Mongoose](https://mongoosejs.com/) -> Object Data Modeling
+* [Mongoose](https://mongoosejs.com/) -> Mongo Driver
 * [Jest](https://jestjs.io/) -> Test runner
 * [Ajv](https://ajv.js.org/) -> Validador de JSON
 
