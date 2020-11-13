@@ -25,7 +25,7 @@ Voce pode testar a api clicando [aqui](https://evening-reaches-79490.herokuapp.c
 ### :small_blue_diamond: **Company**
 * Content-Type: application/json
 
-Method   | URI    | Body | Query      | Descricao
+Method   | URI    | Body | Query      | Descrição
 --------- | ------| ------- | ---------- | --------
 POST | /company    | name |            | Cria uma nova empresa
 GET | /company     ||            | Busca todas empresas
@@ -37,15 +37,15 @@ _____
 ### :small_blue_diamond: **Company Unity**
 * Content-Type: application/json
 
-Method   | URI   | Body | Query | Descricao
+Method   | URI   | Body | Query | Descrição
 --------- | ------ | ----- | ------ | -----
 POST | /companyunity| name, address, company |      | Cria uma nova unidade
 GET | /companyunity | | company     | Busca todas unidades (use a query company com o id para filtrar unidades de uma empresa)
 GET | /companyunity/:id ||   | Busca unidade por id
 PUT | /companyunity/:id| name, address, company |   | Atualiza dados de uma unidade
 DELETE | /companyunity/:id| || Deleta uma unidade
-POST   | /companyunity/:id/machines| | | Adiciona uma maquina (ativo) a uma unidade
-DELETE | /companyunity/:id/machines/:machineId || | Remove uma maquina (ativo) de uma unidade
+POST   | /companyunity/:id/machines| | | Adiciona uma máquina (ativo) a uma unidade
+DELETE | /companyunity/:id/machines/:machineId || | Remove uma máquina (ativo) de uma unidade
 _____
 ### :small_blue_diamond: **Machine Model**
 * Content-Type: application/json
@@ -61,7 +61,7 @@ _______
 ### :small_blue_diamond: **User**
 * Content-Type: application/json
 
-Method   | URI   | Body | Query   | Descricao
+Method   | URI   | Body | Query   | Descrição
 --------- | ------ | ----- | ----- | ------
 POST | /user | name |           | Cria um novo usuario
 GET | /user  |   |          | Busca todos os usuarios
@@ -72,18 +72,18 @@ ______
 ### :small_blue_diamond: **Machine**
 * Content-Type: multipart/form-data
 
-Method    | URI    | Body | Query      | Descricao
+Method    | URI    | Body | Query      | Descrição
 --------- | ------ | ------ | ------ | ------
-POST | /machine | name, description, model, responsable, image (binario)  |        | Cria uma nova maquina (ativo)
-GET | /machine  |   |        | Busca todas maquinas 
-GET | /machine/:id | |       | Busca uma maquina por id
-PUT | /machine/:id | name, description, model, responsable, image (binario) |      | Atualiza dados de uma maquina
-DELETE | /machine/:id ||     | Deleta uma maquina
-GET | /machine/:id/image ||  | Retorna imagem da maquina (ativo)
+POST | /machine | name, description, model, responsable, image (binario)  |        | Cria uma nova máquina (ativo)
+GET | /machine  |   |        | Busca todas máquinas 
+GET | /machine/:id | |       | Busca uma máquina por id
+PUT | /machine/:id | name, description, model, responsable, image (binario) |      | Atualiza dados de uma máquina
+DELETE | /machine/:id ||     | Deleta uma máquina
+GET | /machine/:id/image ||  | Retorna imagem da máquina (ativo)
 
 ## :pushpin: Testes
 Os testes podem ser executados executando o comando `npm test`
-### Printscreen da execucao dos testes
+### Printscreen da execução dos testes
 ![tests image](testsExecution.png)
 
 ---
