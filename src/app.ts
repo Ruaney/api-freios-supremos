@@ -30,7 +30,7 @@ class App {
   }
 
   async start() {
-    const port = this.port || 3000;
+    const port = this.port || 5000;
 
     try {
       await this.database.connect();
