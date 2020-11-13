@@ -1,13 +1,24 @@
 import { NextFunction, Request, Response } from "express";
 import { CompanyUnity } from "../models";
 import { CompanyUnityRepository } from "../repositories";
+import { CompanyUnityValidators } from "../schemaValidators";
 
 export class CompanyUnityController {
-  constructor(private repository: CompanyUnityRepository) {}
+  constructor(
+    private repository: CompanyUnityRepository,
+    private companyUnityValidators: any
+  ) {}
 
   async save(req: Request, res: Response, next: NextFunction) {
+    const body = req.body;
+    if (!this.companyUnityValidators.addValidator(body)) {
+      return res.status(400).send({
+        message: `Invalid fields ${JSON.stringify(
+          this.companyUnityValidators.addValidator.errors
+        )}`,
+      });
+    }
     try {
-      const body = req.body;
       const companyUnity = new CompanyUnity(
         body.name,
         body.address,
@@ -21,9 +32,16 @@ export class CompanyUnityController {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
+    const body = req.body;
+    if (!this.companyUnityValidators.updateValidator(body)) {
+      return res.status(400).send({
+        message: `Invalid fields ${JSON.stringify(
+          this.companyUnityValidators.updateValidator.errors
+        )}`,
+      });
+    }
     try {
       const companyId = req.params.id;
-      const body = req.body;
       const updatedCompany = await this.repository.update(companyId, body);
 
       if (!updatedCompany) {
@@ -74,9 +92,17 @@ export class CompanyUnityController {
   }
 
   async addMachine(req: Request, res: Response, next: NextFunction) {
+    const body = req.body;
+    if (!this.companyUnityValidators.addMachineValidator(body)) {
+      return res.status(400).send({
+        message: `Invalid fields ${JSON.stringify(
+          this.companyUnityValidators.addMachineValidator.errors
+        )}`,
+      });
+    }
     try {
       const companyUnityId = req.params.id;
-      const machineId = req.body.machineId;
+      const machineId = body.machineId;
       const updatedMachine = await this.repository.addMachine(
         companyUnityId,
         machineId
@@ -109,5 +135,6 @@ export class CompanyUnityController {
 
 const companyUnityRepository = new CompanyUnityRepository();
 export const CompanyUnityControllerInstance = new CompanyUnityController(
-  companyUnityRepository
+  companyUnityRepository,
+  CompanyUnityValidators
 );

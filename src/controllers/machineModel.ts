@@ -1,13 +1,25 @@
 import { NextFunction, Request, Response } from "express";
 import { MachineModel } from "../models";
 import { MachineModelRepository } from "../repositories";
+import { MachineModelValidators } from "../schemaValidators";
 
 export class MachineModelController {
-  constructor(private repository: MachineModelRepository) {}
+  constructor(
+    private repository: MachineModelRepository,
+    private machineModelValidator: any
+  ) {}
 
   async save(req: Request, res: Response, next: NextFunction) {
+    const body = req.body;
+    if (!this.machineModelValidator.addValidator(body)) {
+      return res.status(400).send({
+        message: `Invalid fields ${JSON.stringify(
+          this.machineModelValidator.addValidator.errors
+        )}`,
+      });
+    }
+
     try {
-      const body = req.body;
       const machineModel = new MachineModel(body.name, body.description);
       const savedMachineModel = await this.repository.save(machineModel);
       return res.send(savedMachineModel);
@@ -17,17 +29,27 @@ export class MachineModelController {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
+    const body = req.body;
+    if (!this.machineModelValidator.updateValidator(body)) {
+      return res.status(400).send({
+        message: `Invalid fields ${JSON.stringify(
+          this.machineModelValidator.updateValidator.errors
+        )}`,
+      });
+    }
     try {
       const machineModelId = req.params.id;
-      const body = req.body;
-      const updatedMachineModel = await this.repository.update(machineModelId, body);
+      const updatedMachineModel = await this.repository.update(
+        machineModelId,
+        body
+      );
 
       if (!updatedMachineModel) {
-        return res.status(400).send({message: "Resource not found"});
+        return res.status(400).send({ message: "Resource not found" });
       }
 
       return res.send(updatedMachineModel);
-    } catch(err) {
+    } catch (err) {
       return next(err);
     }
   }
@@ -37,10 +59,10 @@ export class MachineModelController {
       const machineModelId = req.params.id;
       const machineModelDeleted = await this.repository.delete(machineModelId);
       if (machineModelDeleted) {
-        return res.send({message: 'Resource deleted'});
+        return res.send({ message: "Resource deleted" });
       }
-      return res.send({message: 'Resource not deleted'});
-    } catch(err) {
+      return res.send({ message: "Resource not deleted" });
+    } catch (err) {
       return next(err);
     }
   }
@@ -57,14 +79,16 @@ export class MachineModelController {
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
       const machineModelId = req.params.id;
-      const machineModel = await this.repository.getOne({_id: machineModelId});
+      const machineModel = await this.repository.getOne({
+        _id: machineModelId,
+      });
 
       if (!machineModel) {
         return res.status(404).send();
       }
 
       return res.send(machineModel);
-    } catch(err) {
+    } catch (err) {
       return next(err);
     }
   }
@@ -72,5 +96,6 @@ export class MachineModelController {
 
 const machineModelRepository = new MachineModelRepository();
 export const MachineModelControllerInstance = new MachineModelController(
-  machineModelRepository
+  machineModelRepository,
+  MachineModelValidators
 );

@@ -27,9 +27,14 @@ class RepositoryMock implements Repository {
   }
 }
 
+const validatorsMock = {
+  addValidator: jest.fn(),
+  updateValidator: jest.fn()
+}
+
 describe("User Controller", () => {
   const repositoryMock = new RepositoryMock();
-  const userController = new UserController(repositoryMock as any);
+  const userController = new UserController(repositoryMock as any, validatorsMock);
 
   let res: any = {
     send: jest.fn(),
@@ -45,6 +50,8 @@ describe("User Controller", () => {
           name: "Empresa 1 teste",
         },
       } as Request;
+
+      validatorsMock.addValidator.mockImplementation(() => true);
       await userController.save(req, res, next);
 
       expect(mocksRepository.save).toHaveBeenCalledWith(
@@ -56,13 +63,13 @@ describe("User Controller", () => {
       const req = {
         body: {},
       } as Request;
-      mocksRepository.save.mockImplementation((data) => {
-        if (!data.name) {
-          throw new Error();
-        }
-      });
+      const res = {
+        status: jest.fn(() => ({send: jest.fn()}))
+      } as any;
+      
+      validatorsMock.addValidator.mockImplementation(() => false);
       await userController.save(req, res, next);
-      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(res.status).toHaveBeenCalledWith(400);
     });
   });
 
@@ -132,6 +139,7 @@ describe("User Controller", () => {
         },
       } as any;
 
+      validatorsMock.updateValidator.mockImplementation(() => true);
       await userController.update(req, res, next);
       return expect(mocksRepository.update).toHaveBeenCalledWith(
         { _id: req.params.id },

@@ -27,9 +27,14 @@ class RepositoryMock implements Repository {
   }
 }
 
+const validatorsMock = {
+  addValidator: jest.fn(),
+  updateValidator: jest.fn()
+}
+
 describe("Machine Controller", () => {
   const repositoryMock = new RepositoryMock();
-  const machineController = new MachineController(repositoryMock as any);
+  const machineController = new MachineController(repositoryMock as any, validatorsMock);
 
   const next = jest.fn();
 
@@ -44,15 +49,14 @@ describe("Machine Controller", () => {
           description: "descricao maquina 1",
           model: "modelId",
           responsable: "userId",
-          status: "available",
         },
       } as any;
       let res: any = {
         send: jest.fn(),
         status: jest.fn(),
       };
+      validatorsMock.addValidator.mockImplementation(() => true);
       await machineController.save(req, res, next);
-
       expect(mocksRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({ name: req.body.name })
       );
@@ -62,17 +66,12 @@ describe("Machine Controller", () => {
       const req = {
         body: {},
       } as Request;
-      mocksRepository.save.mockImplementation((data) => {
-        if (!data.name) {
-          throw new Error();
-        }
-      });
-      let res: any = {
-        send: jest.fn(),
-        status: jest.fn(),
-      };
+      let res = {
+        status: jest.fn(() => ({send: jest.fn()})),
+      } as any;
+      validatorsMock.addValidator.mockImplementation(() => false);
       await machineController.save(req, res, next);
-      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(res.status).toHaveBeenCalledWith(400);
     });
   });
 
@@ -162,7 +161,7 @@ describe("Machine Controller", () => {
         send: jest.fn(),
         status: jest.fn(),
       };
-
+      validatorsMock.updateValidator.mockImplementation(() => true);
       await machineController.update(req, res, next);
       return expect(mocksRepository.update).toHaveBeenCalledWith(
         { _id: req.params.id },
@@ -182,6 +181,7 @@ describe("Machine Controller", () => {
         send: jest.fn(),
         status: jest.fn(),
       };
+      validatorsMock.updateValidator.mockImplementation(() => true);
       await machineController.update(req, res, next);
       return expect(res.status).toHaveBeenCalledWith(400);
     });

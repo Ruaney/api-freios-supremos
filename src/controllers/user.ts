@@ -1,13 +1,24 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "../models";
 import { UserRepository } from "../repositories";
+import { UserValidators } from "../schemaValidators";
 
 export class UserController {
-  constructor(private repository: UserRepository) {}
+  constructor(
+    private repository: UserRepository,
+    private userValidators: any
+  ) {}
 
   async save(req: Request, res: Response, next: NextFunction) {
+    const body = req.body;
+    if (!this.userValidators.addValidator(body)) {
+      return res.status(400).send({
+        message: `Invalid fields ${JSON.stringify(
+          this.userValidators.addValidator.errors
+        )}`,
+      });
+    }
     try {
-      const body = req.body;
       const user = new User(body.name);
       const savedUser = await this.repository.save(user);
       return res.send(savedUser);
@@ -17,17 +28,24 @@ export class UserController {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
+    const body = req.body;
+    if (!this.userValidators.updateValidator(body)) {
+      return res.status(400).send({
+        message: `Invalid fields ${JSON.stringify(
+          this.userValidators.addValidator.errors
+        )}`,
+      });
+    }
     try {
       const userId = req.params.id;
-      const body = req.body;
       const updatedUser = await this.repository.update(userId, body);
 
       if (!updatedUser) {
-        return res.status(400).send({message: "Resource not found"});
+        return res.status(400).send({ message: "Resource not found" });
       }
 
       return res.send(updatedUser);
-    } catch(err) {
+    } catch (err) {
       return next(err);
     }
   }
@@ -37,10 +55,10 @@ export class UserController {
       const userId = req.params.id;
       const userDeleted = await this.repository.delete(userId);
       if (userDeleted) {
-        return res.send({message: 'Resource deleted'});
+        return res.send({ message: "Resource deleted" });
       }
-      return res.send({message: 'Resource not deleted'});
-    } catch(err) {
+      return res.send({ message: "Resource not deleted" });
+    } catch (err) {
       return next(err);
     }
   }
@@ -57,14 +75,14 @@ export class UserController {
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.params.id;
-      const user = await this.repository.getOne({_id: userId});
+      const user = await this.repository.getOne({ _id: userId });
 
       if (!user) {
         return res.status(404).send();
       }
 
       return res.send(user);
-    } catch(err) {
+    } catch (err) {
       return next(err);
     }
   }
@@ -72,5 +90,6 @@ export class UserController {
 
 const userRepository = new UserRepository();
 export const UserControllerInstance = new UserController(
-  userRepository
+  userRepository,
+  UserValidators
 );

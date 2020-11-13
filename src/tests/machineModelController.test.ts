@@ -27,9 +27,14 @@ class RepositoryMock implements Repository {
   }
 }
 
+const validatorsMock = {
+  addValidator: jest.fn(),
+  updateValidator: jest.fn()
+}
+
 describe("MachineModel Controller", () => {
   const repositoryMock = new RepositoryMock();
-  const machineModelController = new MachineModelController(repositoryMock as any);
+  const machineModelController = new MachineModelController(repositoryMock as any, validatorsMock);
 
   let res: any = {
     send: jest.fn(),
@@ -46,6 +51,7 @@ describe("MachineModel Controller", () => {
           description: "descricao modelo 1"
         },
       } as Request;
+      validatorsMock.addValidator.mockImplementation(() => true);
       await machineModelController.save(req, res, next);
 
       expect(mocksRepository.save).toHaveBeenCalledWith(
@@ -53,17 +59,17 @@ describe("MachineModel Controller", () => {
       );
     });
 
-    it("Calls next function with an error when required property is not given", async () => {
+    it("should call res with status 400 when property properties is not given", async () => {
       const req = {
         body: {},
       } as Request;
-      mocksRepository.save.mockImplementation((data) => {
-        if (!data.name) {
-          throw new Error();
-        }
-      });
+      const res = {
+        status: jest.fn(() => ({send: jest.fn()}))
+      } as any;
+      validatorsMock.addValidator.mockImplementation(() => false);
+
       await machineModelController.save(req, res, next);
-      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(res.status).toHaveBeenCalledWith(400);
     });
   });
 
@@ -132,10 +138,12 @@ describe("MachineModel Controller", () => {
           id: 'machineModelid'
         },
         body: {
-          name: 'new model name'
+          name: 'new model name',
+          description: 'model description'
         }
       } as any;
 
+      validatorsMock.updateValidator.mockImplementation(() => true);
       await machineModelController.update(req, res, next);
       return expect(mocksRepository.update).toHaveBeenCalledWith({_id: req.params.id}, expect.objectContaining({name: req.body.name}));
     });

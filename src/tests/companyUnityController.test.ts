@@ -26,10 +26,15 @@ class RepositoryMock implements Repository {
   }
 }
 
+const validatorsMock = {
+  addValidator: jest.fn(),
+  updateValidator: jest.fn()
+}
+
 describe("CompanyUnity Controller", () => {
   const repositoryMock = new RepositoryMock();
   const companyUnityController = new CompanyUnityController(
-    repositoryMock as any
+    repositoryMock as any, validatorsMock
   );
 
   const res: any = {
@@ -48,6 +53,7 @@ describe("CompanyUnity Controller", () => {
           company: "idCompany",
         },
       } as any;
+      validatorsMock.addValidator.mockImplementation(() => true);
       await companyUnityController.save(req, res, next);
       return expect(mocksRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -61,14 +67,13 @@ describe("CompanyUnity Controller", () => {
       const req = {
         body: {},
       } as any;
+      const res = {
+        status: jest.fn(() => ({send: jest.fn()}))
+      } as any;
 
-      mocksRepository.save.mockImplementation((data) => {
-        if (!data.name || !data.company) {
-          throw new Error();
-        }
-      });
+      validatorsMock.addValidator.mockImplementation(() => false);
       await companyUnityController.save(req, res, next);
-      return expect(next).toHaveBeenCalledWith(expect.any(Error));
+      return expect(res.status).toHaveBeenCalledWith(400);
     });
   });
 
@@ -133,6 +138,7 @@ describe("CompanyUnity Controller", () => {
         },
       } as any;
 
+      validatorsMock.updateValidator.mockImplementation(() => true);
       await companyUnityController.update(req, res, next);
       return expect(mocksRepository.update).toHaveBeenCalledWith(
         { _id: req.params.id },

@@ -27,9 +27,14 @@ class RepositoryMock implements Repository {
   }
 }
 
+const validatorsMock = {
+  addValidator: jest.fn(),
+  updateValidator: jest.fn()
+}
+
 describe("Company Controller", () => {
   const repositoryMock = new RepositoryMock();
-  const companyController = new CompanyController(repositoryMock as any);
+  const companyController = new CompanyController(repositoryMock as any, validatorsMock);
 
   let res: any = {
     send: jest.fn(),
@@ -45,6 +50,8 @@ describe("Company Controller", () => {
           name: "Empresa 1 teste",
         },
       } as Request;
+
+      validatorsMock.addValidator.mockImplementation(() => true);
       await companyController.save(req, res, next);
 
       expect(mocksRepository.save).toHaveBeenCalledWith(
@@ -56,13 +63,12 @@ describe("Company Controller", () => {
       const req = {
         body: {},
       } as Request;
-      mocksRepository.save.mockImplementation((data) => {
-        if (!data.name) {
-          throw new Error();
-        }
-      });
+      const res = {
+        status: jest.fn(() => ({send: jest.fn()}))
+      } as any;
+      validatorsMock.addValidator.mockImplementation(() => false);
       await companyController.save(req, res, next);
-      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(res.status).toHaveBeenCalledWith(400);
     });
   });
 
@@ -132,7 +138,7 @@ describe("Company Controller", () => {
           name: 'new company name'
         }
       } as any;
-
+      validatorsMock.updateValidator.mockImplementation(() => true);
       await companyController.update(req, res, next);
       return expect(mocksRepository.update).toHaveBeenCalledWith({_id: req.params.id}, expect.objectContaining({name: req.body.name}));
     });
