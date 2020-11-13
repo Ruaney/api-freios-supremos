@@ -35,7 +35,7 @@ class App {
     try {
       await this.database.connect();
 
-      this.app.listen(port, () => {
+      this.app.listen(process.env.PORT || port, () => {
         console.log("Server running on port", port);
       });
     } catch (err) {

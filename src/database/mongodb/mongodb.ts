@@ -13,11 +13,6 @@ class MongoDB implements Database {
       const dbUri = process.env.MONGO_ATLAS_DBURI;
       const dbName = process.env.MONGO_ATLAS_DBNAME;
 
-      console.log('db username', username);
-      console.log('db password', password);
-      console.log('db uri', dbUri);
-      console.log('db name', dbName);
-
       // connecting to mongo atlas
       await Mongoose.connect(
         `mongodb+srv://${username}:${password}${dbUri}/${dbName}`,
