@@ -13,9 +13,9 @@ export class CompanyUnityRepository implements Repository {
     this.model = CompanyUnityMongooseModel;
   }
 
-  async get(): Promise<CompanyUnity[]> {
+  async get(query?): Promise<CompanyUnity[]> {
     try {
-      const documents = await this.model.find({}).populate({path: 'company machines', populate: 'model responsable'});
+      const documents = await this.model.find(query || {}).populate({path: 'company machines', populate: 'model responsable'});
       const companyUnities: CompanyUnity[] = documents.map(
         (doc) =>
           new CompanyUnity(

@@ -1,5 +1,5 @@
 export interface Repository {
-  get();
+  get(query);
   getOne(query: any);
   save(data: any);
   update(id: string, data: any);

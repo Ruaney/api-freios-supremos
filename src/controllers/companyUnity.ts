@@ -69,7 +69,8 @@ export class CompanyUnityController {
 
   async get(req: Request, res: Response, next: NextFunction) {
     try {
-      const unities = await this.repository.get();
+      const query = req.query;
+      const unities = await this.repository.get(query);
       return res.send(unities);
     } catch (err) {
       return next(err);
