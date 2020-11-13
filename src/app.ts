@@ -12,6 +12,12 @@ class App {
   private app = express();
   constructor(private database: Database, private port?: string) {
     this.configureBodyParser();
+
+    this.app.get('/', (req, res, next) => {
+      return res.send(`
+      API Freios Supremos. Visite o {link} para mais informacoes.
+      `)
+    });
   }
 
   private configureBodyParser() {
