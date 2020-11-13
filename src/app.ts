@@ -15,7 +15,7 @@ class App {
 
     this.app.get('/', (req, res, next) => {
       return res.send(`
-      API Freios Supremos. Visite o {link} para mais informacoes.
+      API Freios Supremos. Visite https://github.com/github-carlos/api-freios-supremos para mais informacoes.
       `)
     });
   }
