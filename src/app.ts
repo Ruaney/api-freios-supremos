@@ -39,7 +39,7 @@ class App {
         console.log("Server running on port", port);
       });
     } catch (err) {
-      console.log("Falha ao iniciar o app");
+      console.log("Falha ao iniciar o app " + err);
     }
   }
 
